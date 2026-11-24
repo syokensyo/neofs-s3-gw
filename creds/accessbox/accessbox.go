@@ -102,7 +102,9 @@ func (x *AccessBox) GetTokens(owner *keys.PrivateKey, resolver session.NNSResolv
 			return nil, fmt.Errorf("session token v2 is null")
 		}
 
-		ok, err := gateData.SessionTokenV2.AssertAuthority(ownerID, resolver)
+		// A decoded gate is a token subject by user ID, NNS subjects are not
+		// resolved.
+		ok, err := gateData.SessionTokenV2.AssertAuthority(ownerID, nil)
 		if err != nil {
 			return nil, fmt.Errorf("failed to check authority: %w", err)
 		}
