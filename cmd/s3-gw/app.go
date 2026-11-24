@@ -168,7 +168,6 @@ func newApp(ctx context.Context, log *Logger, v *viper.Viper) *App {
 		v.GetStringSlice(cfgAllowedAccessKeyIDPrefixes),
 		v.GetString(cfgNamespace),
 		getAccessBoxCacheConfig(v, log.logger),
-		contracts.NewNNSResolver(resolvedContracts.NNSContractReader),
 	)
 
 	app := &App{

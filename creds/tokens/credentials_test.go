@@ -69,7 +69,7 @@ func TestGetBoxErrors(t *testing.T) {
 	nodeFailure.SetMessage("connection to the RPC node has been lost")
 
 	t.Run("valid", func(t *testing.T) {
-		c := New(&neoFSStub{payload: newBox(t, gateKey)}, gateKey, cache.DefaultAccessBoxConfig(zap.NewNop()), nil)
+		c := New(&neoFSStub{payload: newBox(t, gateKey)}, gateKey, cache.DefaultAccessBoxConfig(zap.NewNop()))
 		_, err := c.GetBox(context.Background(), oidtest.Address())
 		require.NoError(t, err)
 	})
@@ -91,7 +91,7 @@ func TestGetBoxErrors(t *testing.T) {
 		{name: "connection failure", neoFS: neoFSStub{err: errors.New("connection refused")}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			c := New(&tc.neoFS, gateKey, cache.DefaultAccessBoxConfig(zap.NewNop()), nil)
+			c := New(&tc.neoFS, gateKey, cache.DefaultAccessBoxConfig(zap.NewNop()))
 
 			_, err := c.GetBox(context.Background(), oidtest.Address())
 			require.Error(t, err)

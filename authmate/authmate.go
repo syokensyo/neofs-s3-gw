@@ -14,7 +14,6 @@ import (
 	"github.com/nspcc-dev/neofs-s3-gw/api/cache"
 	"github.com/nspcc-dev/neofs-s3-gw/creds/accessbox"
 	"github.com/nspcc-dev/neofs-s3-gw/creds/tokens"
-	"github.com/nspcc-dev/neofs-s3-gw/internal/neofs/contracts"
 	cid "github.com/nspcc-dev/neofs-sdk-go/container/id"
 	"github.com/nspcc-dev/neofs-sdk-go/eacl"
 	"github.com/nspcc-dev/neofs-sdk-go/netmap"
@@ -109,9 +108,8 @@ type (
 
 	// ObtainSecretOptions contains options for passing to Agent.ObtainSecret method.
 	ObtainSecretOptions struct {
-		SecretAddress    string
-		GatePrivateKey   *keys.PrivateKey
-		RPCHTTPEndpoints []string
+		SecretAddress  string
+		GatePrivateKey *keys.PrivateKey
 	}
 )
 
@@ -247,7 +245,7 @@ func (a *Agent) IssueSecret(ctx context.Context, w io.Writer, options *IssueSecr
 		zap.Stringer("owner_tkn", idOwner))
 
 	addr, err := tokens.
-		New(a.neoFS, nil, cache.DefaultAccessBoxConfig(a.log), contracts.NewNoOpNNSResolver()).
+		New(a.neoFS, nil, cache.DefaultAccessBoxConfig(a.log)).
 		Put(ctx, id, idOwner, box, lifetime.ExpireAt, options.GatesPublicKeys...)
 	if err != nil {
 		return fmt.Errorf("failed to put bearer token: %w", err)
@@ -292,12 +290,7 @@ func (a *Agent) IssueSecret(ctx context.Context, w io.Writer, options *IssueSecr
 // ObtainSecret receives an existing secret access key from NeoFS and
 // writes to io.Writer the secret access key.
 func (a *Agent) ObtainSecret(ctx context.Context, options *ObtainSecretOptions) (*ObtainingResult, error) {
-	resolvedContracts, err := contracts.ResolveContracts(ctx, a.log, options.RPCHTTPEndpoints)
-	if err != nil {
-		return nil, fmt.Errorf("resolve contracts failed: %w", err)
-	}
-
-	bearerCreds := tokens.New(a.neoFS, options.GatePrivateKey, cache.DefaultAccessBoxConfig(a.log), contracts.NewNNSResolver(resolvedContracts.NNSContractReader))
+	bearerCreds := tokens.New(a.neoFS, options.GatePrivateKey, cache.DefaultAccessBoxConfig(a.log))
 
 	addr, err := oid.DecodeAddressString(options.SecretAddress)
 	if err != nil {

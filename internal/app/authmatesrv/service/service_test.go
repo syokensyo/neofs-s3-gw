@@ -173,7 +173,7 @@ func TestCredentialsFlow(t *testing.T) {
 
 	// Every gateway must find the very same secret the client was given.
 	for _, gateKey := range testService.gates {
-		gateData, err := box.GetTokens(gateKey, resolver)
+		gateData, err := box.GetTokens(gateKey)
 		require.NoError(t, err)
 		require.Equal(t, prepared.SecretAccessKey, gateData.AccessKey)
 		require.Equal(t, testService.issuer, gateData.SessionTokenV2.Issuer())
@@ -185,7 +185,7 @@ func TestCredentialsFlow(t *testing.T) {
 	stranger, err := keys.NewPrivateKey()
 	require.NoError(t, err)
 
-	_, err = box.GetTokens(stranger, resolver)
+	_, err = box.GetTokens(stranger)
 	require.Error(t, err)
 }
 
@@ -210,7 +210,7 @@ func TestCredentialsFlowManyGates(t *testing.T) {
 	require.NoError(t, box.Unmarshal(payload))
 
 	for _, gateKey := range testService.gates {
-		gateData, err := box.GetTokens(gateKey, &contracts.NoOpNNSResolver{})
+		gateData, err := box.GetTokens(gateKey)
 		require.NoError(t, err)
 		require.Equal(t, prepared.SecretAccessKey, gateData.AccessKey)
 	}
@@ -252,15 +252,13 @@ func TestUnconfiguredGate(t *testing.T) {
 	var box accessbox.AccessBox
 	require.NoError(t, box.Unmarshal(payload))
 
-	resolver := &contracts.NoOpNNSResolver{}
-
-	gateData, err := box.GetTokens(stranger, resolver)
+	gateData, err := box.GetTokens(stranger)
 	require.NoError(t, err)
 	require.Equal(t, prepared.SecretAccessKey, gateData.AccessKey)
 
 	// The configured gateways get nothing from a box that did not ask for them.
 	for _, gateKey := range testService.gates {
-		_, err = box.GetTokens(gateKey, resolver)
+		_, err = box.GetTokens(gateKey)
 		require.Error(t, err)
 	}
 }

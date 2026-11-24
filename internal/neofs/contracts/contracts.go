@@ -16,7 +16,6 @@ type (
 	ResolvedContracts struct {
 		NetMapContract    util.Uint160
 		ContainerContract util.Uint160
-		NNSContractReader *rpcNNS.ContractReader
 	}
 )
 
@@ -47,8 +46,6 @@ func ResolveContracts(ctx context.Context, log *zap.Logger, rpcHTTPEndpoints []s
 			log.Info("couldn't create inferred reader", zap.String("endpoint", endpoint), zap.Error(err))
 			continue
 		}
-
-		result.NNSContractReader = nnsReader
 
 		result.NetMapContract, err = nnsReader.ResolveFSContract(rpcNNS.NameNetmap)
 		if err != nil {

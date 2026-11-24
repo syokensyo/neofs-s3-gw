@@ -9,6 +9,7 @@ This document outlines major changes between releases.
 
 ### Changed
 - Presigned URLs dated up to 15 minutes ahead of the gateway clock are accepted (#1409)
+- `--rpc-endpoint` flag of `neofs-s3-authmate obtain-secret` is optional and not used (#1402)
 
 ### Fixed
 - `SignatureDoesNotMatch` for requests signing a zero `Content-Length` or `User-Agent` (#1400)

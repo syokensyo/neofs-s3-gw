@@ -24,7 +24,6 @@ import (
 	"github.com/nspcc-dev/neofs-s3-gw/creds/tokens"
 	"github.com/nspcc-dev/neofs-s3-gw/internal/limits"
 	oid "github.com/nspcc-dev/neofs-sdk-go/object/id"
-	"github.com/nspcc-dev/neofs-sdk-go/session/v2"
 )
 
 // postPolicyCredentialRegexp -- is regexp for credentials when uploading file using POST with policy.
@@ -108,9 +107,9 @@ func (p prs) Seek(_ int64, _ int) (int64, error) {
 var _ io.ReadSeeker = prs(0)
 
 // New creates an instance of AuthCenter.
-func New(neoFS tokens.NeoFS, key *keys.PrivateKey, prefixes []string, namespace string, config *cache.Config, resolver session.NNSResolver) Center {
+func New(neoFS tokens.NeoFS, key *keys.PrivateKey, prefixes []string, namespace string, config *cache.Config) Center {
 	return &center{
-		cli:                        tokens.New(neoFS, key, config, resolver),
+		cli:                        tokens.New(neoFS, key, config),
 		postReg:                    NewRegexpMatcher(postPolicyCredentialRegexp),
 		allowedAccessKeyIDPrefixes: prefixes,
 		namespace:                  namespace,

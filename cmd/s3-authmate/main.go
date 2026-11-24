@@ -458,8 +458,7 @@ func obtainSecret() *cli.Command {
 			&cli.StringFlag{
 				Name:        "rpc-endpoint",
 				Value:       "",
-				Usage:       "address of neofs RPC endpoint to connect to. https://localhost:30333 (with schema)",
-				Required:    true,
+				Usage:       "not used, kept for compatibility",
 				Destination: &rpcAddressFlag,
 			},
 			&cli.StringFlag{
@@ -555,9 +554,8 @@ func obtainSecret() *cli.Command {
 			secretAddress := strings.Replace(accessKeyIDFlag, "0", "/", 1)
 
 			obtainSecretOptions := &authmate.ObtainSecretOptions{
-				SecretAddress:    secretAddress,
-				GatePrivateKey:   gateCreds,
-				RPCHTTPEndpoints: []string{rpcAddressFlag},
+				SecretAddress:  secretAddress,
+				GatePrivateKey: gateCreds,
 			}
 
 			var tcancel context.CancelFunc
@@ -705,9 +703,8 @@ func resetBucketEACL() *cli.Command {
 			secretAddress := strings.Replace(accessKeyIDFlag, "0", "/", 1)
 
 			obtainSecretOptions := &authmate.ObtainSecretOptions{
-				SecretAddress:    secretAddress,
-				GatePrivateKey:   gateCreds,
-				RPCHTTPEndpoints: []string{peerAddressFlag},
+				SecretAddress:  secretAddress,
+				GatePrivateKey: gateCreds,
 			}
 
 			agent := authmate.New(log, neoFS)

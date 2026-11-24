@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/hex"
-	"errors"
 	"testing"
 
 	"github.com/nspcc-dev/neo-go/pkg/crypto/keys"
@@ -78,7 +77,7 @@ func TestAccessBoxRoundTrip(t *testing.T) {
 
 	expectedAccessKey := hex.EncodeToString(secret)
 	for i, gk := range gateKeys {
-		got, err := box2.GetTokens(gk, nil)
+		got, err := box2.GetTokens(gk)
 		require.NoError(t, err, "gate %d", i)
 		require.NotNil(t, got.SessionTokenV2)
 		require.Equal(t, issuer, got.SessionTokenV2.OriginalIssuer())
@@ -88,19 +87,13 @@ func TestAccessBoxRoundTrip(t *testing.T) {
 	// A key not bound to any subject should fail.
 	other, err := keys.NewPrivateKey()
 	require.NoError(t, err)
-	_, err = box2.GetTokens(other, nil)
+	_, err = box2.GetTokens(other)
 	require.Error(t, err)
 
 	// A box with an unknown version must be rejected up-front.
 	box2.Version = accessBoxVersionCurrent + 1
-	_, err = box2.GetTokens(gateKeys[0], nil)
+	_, err = box2.GetTokens(gateKeys[0])
 	require.ErrorContains(t, err, "unsupported access box version")
-}
-
-type failingResolver struct{}
-
-func (failingResolver) HasUser(string, user.ID) (bool, error) {
-	return false, errors.New("resolver failure")
 }
 
 // NNS subjects of a gate token are not resolved.
@@ -122,7 +115,7 @@ func TestGetTokensNNSSubject(t *testing.T) {
 	require.NoError(t, err)
 
 	for i, gk := range gateKeys {
-		got, err := box.GetTokens(gk, failingResolver{})
+		got, err := box.GetTokens(gk)
 		require.NoError(t, err, "gate %d", i)
 		require.Equal(t, hex.EncodeToString(secret), got.AccessKey)
 	}

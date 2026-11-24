@@ -65,7 +65,7 @@ func PackTokens(gatesData []*GateData) (*AccessBox, error) {
 }
 
 // GetTokens returns gate tokens from AccessBox.
-func (x *AccessBox) GetTokens(owner *keys.PrivateKey, resolver session.NNSResolver) (*GateData, error) {
+func (x *AccessBox) GetTokens(owner *keys.PrivateKey) (*GateData, error) {
 	var decodeFunc func(*AccessBox_Gate) (*GateData, error)
 
 	switch x.Version {
@@ -138,8 +138,8 @@ func (x *AccessBox) GetPlacementPolicy() ([]*ContainerPolicy, error) {
 }
 
 // GetBox parses AccessBox to Box.
-func (x *AccessBox) GetBox(owner *keys.PrivateKey, resolver session.NNSResolver) (*Box, error) {
-	tokens, err := x.GetTokens(owner, resolver)
+func (x *AccessBox) GetBox(owner *keys.PrivateKey) (*Box, error) {
+	tokens, err := x.GetTokens(owner)
 	if err != nil {
 		return nil, fmt.Errorf("get tokens: %w", err)
 	}
